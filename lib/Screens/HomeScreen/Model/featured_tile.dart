@@ -1,26 +1,14 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
-import 'package:kata_jane/Screens/BookingsScreen/BookNow/book_now.dart';
 
 import '../../../EventModel/event_model.dart';
+import '../../BookingsScreen/BookNow/book_now.dart';
 
 class FeaturedTile extends StatelessWidget {
-  // String poster;
-  // String title;
-  // String place;
-  // String date;
-  // String eventDetails;
-  Event event;
+  final Event event;
   FeaturedTile({super.key, required this.event});
 
   @override
   Widget build(BuildContext context) {
-    // String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(date);
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -33,7 +21,7 @@ class FeaturedTile extends StatelessWidget {
                 (context, animation, secondaryAnimation, child) {
               return SlideTransition(
                 position: Tween<Offset>(
-                  begin: Offset(1.0, 0.0),
+                  begin: const Offset(1.0, 0.0),
                   end: Offset.zero,
                 ).animate(animation),
                 child: child,
@@ -44,28 +32,25 @@ class FeaturedTile extends StatelessWidget {
         );
       },
       child: Container(
-        // height: 290,
-        // color: Colors.blue,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
-
-        // color: Colors.red,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Container(
-                // height: 40,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12),
                   ),
                   image: DecorationImage(
-                    image: AssetImage(event.poster),
+                    image: NetworkImage(event.poster.isNotEmpty
+                        ? event.poster
+                        : 'default_image_url'), // Ensure default image is present
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -76,51 +61,40 @@ class FeaturedTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 3,
-                  ),
+                  const SizedBox(height: 3),
                   Text(
-                    event.title,
+                    event.title.isNotEmpty ? event.title : 'No Title',
                     style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: Colors.blueGrey,
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
+                      const Icon(Icons.location_on, color: Colors.blueGrey),
+                      const SizedBox(width: 4),
                       Text(
-                        event.place,
+                        event.place.isNotEmpty ? event.place : 'Unknown Place',
                         style: const TextStyle(
-                            color: Colors.black54, fontWeight: FontWeight.w500),
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 3,
-                  ),
+                  const SizedBox(height: 3),
                   Row(
                     children: [
-                      Icon(
-                        Icons.calendar_month,
-                        color: Colors.blueGrey,
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
+                      const Icon(Icons.calendar_month, color: Colors.blueGrey),
+                      const SizedBox(width: 4),
                       Text(
-                        event.date,
+                        event.date.isNotEmpty ? event.date : 'No Date',
                         style: const TextStyle(
-                            color: Colors.black54, fontWeight: FontWeight.w500),
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),

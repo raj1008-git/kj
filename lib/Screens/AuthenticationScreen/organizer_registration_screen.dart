@@ -3,19 +3,22 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kata_jane/Functions/authFunctions.dart';
-import 'package:kata_jane/Screens/AuthenticationScreen/login_screen.dart';
-import 'package:kata_jane/main_scaffold.dart';
 import 'package:provider/provider.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({super.key});
+import 'organizer_login_screen.dart';
+
+class OrganizerRegistrationScreen extends StatefulWidget {
+  const OrganizerRegistrationScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<OrganizerRegistrationScreen> createState() =>
+      _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegistrationScreenState extends State<OrganizerRegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _organizationNameController = TextEditingController();
+  final _panNumberController = TextEditingController(); // Add this line
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -32,6 +35,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   void dispose() {
+    _organizationNameController.dispose();
+    _panNumberController.dispose(); // Dispose of the new controller
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
@@ -82,6 +87,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             key: _formKey,
             child: Column(
               children: [
+                Text(
+                  'Organizer',
+                  style: TextStyle(color: Colors.pink, fontSize: 30),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 GestureDetector(
                   onTap: _pickImage,
                   child: CircleAvatar(
@@ -98,6 +110,90 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           )
                         : null,
                   ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  cursorColor: Colors.white,
+                  cursorHeight: 26,
+                  controller: _organizationNameController,
+                  decoration: InputDecoration(
+                    suffixIcon: const Icon(Icons.business_outlined),
+                    filled: true,
+                    fillColor: Colors.black12,
+                    floatingLabelStyle: const TextStyle(color: Colors.white),
+                    focusColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 26, vertical: 16),
+                    hintText: "Eg. Event Organizers Inc.",
+                    hintStyle:
+                        const TextStyle(color: Colors.white, fontSize: 16),
+                    labelText: "Organization Name",
+                    labelStyle:
+                        const TextStyle(color: Colors.white, fontSize: 16),
+                    border: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 2.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white70),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.pinkAccent,
+                          width: 1.0,
+                          style: BorderStyle.solid),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white, fontSize: 24),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your organization name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  cursorColor: Colors.white,
+                  cursorHeight: 26,
+                  controller: _panNumberController, // Add this line
+                  decoration: InputDecoration(
+                    suffixIcon: const Icon(Icons.credit_card_outlined),
+                    filled: true,
+                    fillColor: Colors.black12,
+                    floatingLabelStyle: const TextStyle(color: Colors.white),
+                    focusColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 26, vertical: 16),
+                    hintText: "Eg. ABCDE1234F",
+                    hintStyle:
+                        const TextStyle(color: Colors.white, fontSize: 16),
+                    labelText: "PAN Number",
+                    labelStyle:
+                        const TextStyle(color: Colors.white, fontSize: 16),
+                    border: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 2.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white70),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.pinkAccent,
+                          width: 1.0,
+                          style: BorderStyle.solid),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white, fontSize: 24),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your PAN number';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
@@ -154,7 +250,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     focusColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 26, vertical: 16),
-                    hintText: "Eg. Doe",
+                    hintText: "Eg. Sharma",
                     hintStyle:
                         const TextStyle(color: Colors.white, fontSize: 16),
                     labelText: "Last Name",
@@ -196,7 +292,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     focusColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 26, vertical: 16),
-                    hintText: "Eg. example@example.com",
+                    hintText: "Eg. raj.sharma@gmail.com",
                     hintStyle:
                         const TextStyle(color: Colors.white, fontSize: 16),
                     labelText: "Email",
@@ -219,8 +315,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                   style: const TextStyle(color: Colors.white, fontSize: 24),
                   validator: (value) {
-                    if (value == null || !value.contains('@')) {
-                      return 'Invalid email';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    } else if (!RegExp(r'^[\w-]+@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                        .hasMatch(value)) {
+                      return 'Please enter a valid email address';
                     }
                     return null;
                   },
@@ -230,6 +329,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   cursorColor: Colors.white,
                   cursorHeight: 26,
                   controller: _passwordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                     suffixIcon: const Icon(Icons.lock_outline),
                     filled: true,
@@ -238,7 +338,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     focusColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 26, vertical: 16),
-                    hintText: "Password",
+                    hintText: "********",
                     hintStyle:
                         const TextStyle(color: Colors.white, fontSize: 16),
                     labelText: "Password",
@@ -260,15 +360,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ),
                   ),
                   style: const TextStyle(color: Colors.white, fontSize: 24),
-                  obscureText: true,
                   validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return 'Password too short';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
                 TextFormField(
                   cursorColor: Colors.white,
                   cursorHeight: 26,
@@ -315,91 +413,72 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                Divider(
-                  color: Colors.pink,
-                  thickness: 2, // Thickness of the divider
-                  height: 20, // Space around the divider
-                ),
-                const SizedBox(height: 20),
-                DropdownButtonFormField<String>(
-                  value: _selectedCountryCode,
-                  items: _countryCodes.map((code) {
-                    return DropdownMenuItem<String>(
-                      value: code,
-                      child: Text(
-                        code,
-                        style: const TextStyle(
-                            color: Colors.white), // Ensure text color is white
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        cursorColor: Colors.white,
+                        cursorHeight: 26,
+                        controller: _phoneNumberController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          suffixIcon: const Icon(Icons.phone_outlined),
+                          filled: true,
+                          fillColor: Colors.black12,
+                          floatingLabelStyle:
+                              const TextStyle(color: Colors.white),
+                          focusColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 26, vertical: 16),
+                          hintText: "Eg. 1234567890",
+                          hintStyle: const TextStyle(
+                              color: Colors.white, fontSize: 16),
+                          labelText: "Phone Number",
+                          labelStyle: const TextStyle(
+                              color: Colors.white, fontSize: 16),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.blue, width: 2.0),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white70),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.pinkAccent,
+                                width: 1.0,
+                                style: BorderStyle.solid),
+                          ),
+                        ),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 24),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+                          return null;
+                        },
                       ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedCountryCode = value!;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.black12,
-                    labelText: 'Country Code',
-                    labelStyle: const TextStyle(color: Colors.white),
-                    border: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.blue, width: 2.0),
-                      borderRadius: BorderRadius.circular(10),
                     ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white70),
+                    const SizedBox(width: 16),
+                    DropdownButton<String>(
+                      value: _selectedCountryCode,
+                      items: _countryCodes.map((String code) {
+                        return DropdownMenuItem<String>(
+                          value: code,
+                          child: Text(code),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedCountryCode = newValue!;
+                        });
+                      },
+                      dropdownColor: Colors.black,
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
                     ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.pinkAccent, width: 1.0),
-                    ),
-                  ),
-                  dropdownColor: Colors
-                      .black, // Set the background color of the dropdown menu
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  cursorColor: Colors.white,
-                  cursorHeight: 26,
-                  controller: _phoneNumberController,
-                  decoration: InputDecoration(
-                    suffixIcon: const Icon(Icons.phone_outlined),
-                    filled: true,
-                    fillColor: Colors.black12,
-                    floatingLabelStyle: const TextStyle(color: Colors.white),
-                    focusColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 26, vertical: 16),
-                    hintText: "Eg. 1234567890",
-                    hintStyle:
-                        const TextStyle(color: Colors.white, fontSize: 16),
-                    labelText: "Phone Number",
-                    labelStyle:
-                        const TextStyle(color: Colors.white, fontSize: 16),
-                    border: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.blue, width: 2.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white70),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.pinkAccent,
-                          width: 1.0,
-                          style: BorderStyle.solid),
-                    ),
-                  ),
-                  style: const TextStyle(color: Colors.white, fontSize: 24),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    return null;
-                  },
+                  ],
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
@@ -407,7 +486,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   cursorHeight: 26,
                   controller: _addressController,
                   decoration: InputDecoration(
-                    suffixIcon: const Icon(Icons.home_outlined),
+                    suffixIcon: const Icon(Icons.location_on_outlined),
                     filled: true,
                     fillColor: Colors.black12,
                     floatingLabelStyle: const TextStyle(color: Colors.white),
@@ -443,28 +522,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 isButtonPressed
                     ? CircularProgressIndicator(
                         color: Colors.white,
                       )
                     : SizedBox(
-                        height: 2,
+                        height: 1,
                       ),
-                MaterialButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 140, vertical: 17),
-                  color: Colors.pink,
+                ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      isButtonPressed = true;
-                    });
                     if (_formKey.currentState!.validate()) {
                       authService
-                          .register(
+                          .registerAsOrganizer(
                               _emailController.text,
                               _passwordController.text,
                               _firstNameController.text,
@@ -473,64 +543,68 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               _addressController.text,
                               _selectedCountryCode,
                               _profileImage,
-                              null,
-                              null // Pass the profile image
+                              _organizationNameController.text,
+                              _panNumberController.text // Pass the PAN number
                               )
                           .then((_) {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  MainScaffold(selectedIndex: 0)),
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    OrganizerLoginScreen(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
                           (Route<dynamic> route) =>
-                              false, // This condition removes all routes below
+                              false, // This removes all the previous routes
                         );
                       }).catchError((error) {
-                        // Handle errors (e.g., show a snackbar or alert dialog)
+                        // Handle errors (e.g., show a snack bar or alert dialog)
                         print(error);
                       });
                     }
                   },
-                  child: const Text(
-                    "Register",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.pinkAccent, // Text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 27, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                  child: const Text('Register'),
                 ),
-                const SizedBox(height: 25),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Already have an account?',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OrganizerLoginScreen(),
                       ),
-                      const SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginScreen()),
-                          );
-                        },
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Colors.pink,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
+                    );
+                  },
+                  child: Text(
+                    'Already have an account? Login',
+                    style: TextStyle(color: Colors.pinkAccent, fontSize: 16),
                   ),
                 ),
-                const SizedBox(height: 25),
               ],
             ),
           ),

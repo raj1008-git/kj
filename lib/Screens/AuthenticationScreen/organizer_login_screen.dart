@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:kata_jane/Screens/AuthenticationScreen/registration_screen.dart';
-import 'package:kata_jane/main_scaffold.dart';
+import 'package:kata_jane/Screens/AuthenticationScreen/organizer_registration_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../Functions/authFunctions.dart';
+import '../OrganizerDashboard/organizer_dashboard.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class OrganizerLoginScreen extends StatefulWidget {
+  const OrganizerLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<OrganizerLoginScreen> createState() => _OrganizerLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _OrganizerLoginScreenState extends State<OrganizerLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool isButtonPressed = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -45,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         backgroundColor: Colors.black,
         title: const Text(
-          'Login',
+          'Organizer Login',
           style: TextStyle(color: Colors.white, fontSize: 24),
         ),
       ),
@@ -161,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       authService
-                          .logIn(
+                          .loginAsOrganizer(
                         context,
                         _emailController.text,
                         _passwordController.text,
@@ -172,11 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => MainScaffold(
-                          selectedIndex: 0,
-                        ),
-                      ),
+                      MaterialPageRoute(builder: (context) => DashboardPage()),
                       (Route<dynamic> route) =>
                           false, // This condition removes all routes below
                     );
@@ -202,10 +199,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(width: 10),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) {
-                              return RegistrationScreen();
+                              return const OrganizerRegistrationScreen();
                             }),
                           );
                         },

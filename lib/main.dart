@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:kata_jane/Screens/SplashScreen/splash_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'Provider/event_provider.dart'; // Import your provider
+import 'Functions/authFunctions.dart';
+import 'Provider/event_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,9 +19,16 @@ class KataJane extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => EventProvider(), // Provide the EventProvider
-      child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: SplashScreen(), // Set the initial screen
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => AuthService(),
+          )
+        ],
+        child: const MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: SplashScreen(), // Set the initial screen
+        ),
       ),
     );
   }

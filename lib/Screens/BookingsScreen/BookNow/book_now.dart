@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kata_jane/Functions/Api/esewa_payment.dart';
 import 'package:provider/provider.dart';
+
 import '../../../EventModel/event_model.dart';
+import '../../../Functions/authFunctions.dart';
 import '../../../Provider/event_provider.dart';
 import '../../AuthenticationScreen/login_screen.dart';
 
@@ -14,8 +18,82 @@ class BookNow extends StatefulWidget {
 }
 
 class _BookNowState extends State<BookNow> {
+  late EsewaService esewaService;
+
+  @override
+  void initState() {
+    super.initState();
+    esewaService = EsewaService(event: widget.event);
+  }
+
+  Future<void> _handleFavorite() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final eventProvider = Provider.of<EventProvider>(context, listen: false);
+
+    if (authService.user == null) {
+      // Redirect to login if not logged in
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } else if (await _isUserAttendee(authService.userId!)) {
+      final userId = authService.userId!;
+      final eventId = widget.event.documentId;
+
+      eventProvider.toggleFavorite(widget.event);
+
+      // Update Firebase
+      if (widget.event.isFavorite) {
+        await FirebaseFirestore.instance
+            .collection('favourites')
+            .doc(userId)
+            .set({
+          eventId: true,
+        }, SetOptions(merge: true)); // Use merge to keep existing data
+      } else {
+        await FirebaseFirestore.instance
+            .collection('favourites')
+            .doc(userId)
+            .update({
+          eventId: FieldValue.delete(), // Remove the event ID from favorites
+        });
+      }
+    } else {
+      // Redirect to login if user is not an attendee
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
+  Future<void> _handleBookNow() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    if (authService.user == null ||
+        !(await _isUserAttendee(authService.userId!))) {
+      // Redirect to login if not logged in or not an attendee
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } else {
+      // Perform the booking action
+      esewaService.useEsewa(context);
+    }
+  }
+
+  Future<bool> _isUserAttendee(String userId) async {
+    final attendeeDoc = await FirebaseFirestore.instance
+        .collection('attendees')
+        .doc(userId)
+        .get();
+    return attendeeDoc.exists;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -37,7 +115,7 @@ class _BookNowState extends State<BookNow> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Divider(
+              const Divider(
                 height: 5,
                 color: Colors.white,
               ),
@@ -47,35 +125,14 @@ class _BookNowState extends State<BookNow> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Starting from Rs. 500',
+                    Text(
+                      'Starting from Rs. ${widget.event.ticketPrice}',
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                     MaterialButton(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50)),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    const LoginScreen(),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              return SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: const Offset(0.0, 1.0),
-                                  end: Offset.zero,
-                                ).animate(animation),
-                                child: child,
-                              );
-                            },
-                            transitionDuration:
-                                const Duration(milliseconds: 700),
-                          ),
-                        );
-                      },
+                      onPressed: _handleBookNow,
                       color: Colors.green,
                       child: const Text(
                         'Book Now',
@@ -97,7 +154,6 @@ class _BookNowState extends State<BookNow> {
                 clipBehavior: Clip.none,
                 children: [
                   Column(
-                    // mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         height: 150,
@@ -117,7 +173,7 @@ class _BookNowState extends State<BookNow> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(30),
                         image: DecorationImage(
-                            image: AssetImage(widget.event.poster),
+                            image: NetworkImage(widget.event.poster),
                             fit: BoxFit.fill),
                       ),
                       width: 370,
@@ -156,9 +212,7 @@ class _BookNowState extends State<BookNow> {
                                     : Colors.white,
                                 size: 30,
                               ),
-                              onPressed: () {
-                                eventProvider.toggleFavorite(widget.event);
-                              },
+                              onPressed: _handleFavorite,
                             );
                           },
                         ),
@@ -264,7 +318,7 @@ class _BookNowState extends State<BookNow> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '1. Tickets ae Non-Refundable',
+                          '1. Tickets are Non-Refundable',
                           style: TextStyle(color: Colors.white),
                         ),
                         SizedBox(
@@ -278,7 +332,7 @@ class _BookNowState extends State<BookNow> {
                           height: 5,
                         ),
                         Text(
-                          '3. Organizers, venues, artists, and affiliates are not liable for any personal injury, loss, or damage to personal belongings dering the event',
+                          '3. Organizers, venues, artists, and affiliates are not liable for any personal injury, loss, or damage to personal belongings during the event',
                           style: TextStyle(color: Colors.white),
                         ),
                         SizedBox(
